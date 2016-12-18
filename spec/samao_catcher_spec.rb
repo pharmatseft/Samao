@@ -13,21 +13,17 @@ describe Samao::Catcher do
   end
 
   it "get result success" do
-    expect(true).to eq(@catcher.success?)
+    expect(@catcher.success?).to be true
     expect(@catcher.code).to eq(200)
   end
 
   it "get gem name as title" do
-    title = @catcher.doc.css("h1.page__heading a")
-    expect(title.length).to eq(1)
-    title = title.first.content
+    title = @catcher.doc.at_css("h1.page__heading a").content
     expect(title).to eq(@gemname)
   end
 
   it "get gem version as subtitle" do
-    version = @catcher.doc.css("h1.page__heading i.page__subheading")
-    expect(version.length).to eq(1)
-    version = version.first.content
+    version = @catcher.doc.at_css("h1.page__heading i.page__subheading").content
     expect(version).to eq(@gemver)
   end
 end

@@ -10,7 +10,7 @@ module Samao
       @code = 0
 
       @headers = {}
-      @headers["Referer"] = params[:base_url] if params[:base_url]
+      @headers["Referer"] = params[:base_url].to_s if params[:base_url]
 
       self
     end

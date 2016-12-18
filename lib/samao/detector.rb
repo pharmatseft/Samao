@@ -9,6 +9,12 @@ module Samao
       @pages = []
       @items = []
 
+      @queue_of_items = Queue.new
+
+      @semaphore = Queue.new
+      @max_concurrent = params[:max_concurrent] || 5
+      @max_concurrent.times { @semaphore.push(1) }
+
       yield self if block_given?
 
       self
@@ -16,23 +22,38 @@ module Samao
 
     # return Detector self
     def run
-      while @from and @from.run.success? and @current_doc = @from.doc
+      threads = []
+      while @from
+        break unless @from.run.success?
+        @current_doc = @from.doc
+
         # find items in current_page
         if found = @current_doc.css(@selector[:item]) and found.size >= 1
-          @items += found.map do |raw_item|
-            item = Item.new(base_url: @current_url, raw_item:raw_item) do |item|
-              @on[:item].call(item) if @on[:item]
-            end.run
+          found.each do |raw_item|
+            threads << Thread.new do
+              @semaphore.pop
+              # puts "#{Time.now} #{@semaphore.size} available tokens. #{@semaphore.num_waiting} threads waiting."
 
-            if @detail_key
-              detail = Detail.new(item: item, url: item.prop(@detail_key)) do |detail|
-                @on[:detail].call(detail) if @on[:detail]
-              end.run
-            end
+              begin
+                item = Item.new(base_url: @current_url, raw_item:raw_item) do |item|
+                  @on[:item].call(item) if @on[:item]
+                end.run
 
-            item.prop
-          end
-        end
+                if @detail_key
+                  detail = Detail.new(item: item, url: item.prop(@detail_key)) do |detail|
+                    @on[:detail].call(detail) if @on[:detail]
+                  end.run
+                end
+
+                @queue_of_items.push item.prop
+              rescue => e
+                p e
+              ensure
+                @semaphore.push(1)
+              end
+            end # end Thread
+          end # end found.each loop
+        end # end if found
 
         # find next page[s] in current page
         if @selector[:next] and next_url = @current_doc.at_css(@selector[:next]) and next_url = URI.join(@current_url, next_url['href'])
@@ -41,6 +62,13 @@ module Samao
         else
           stop
         end
+      end # end while @from
+
+      threads.each(&:join)
+
+      threads.size.times do
+        item = @queue_of_items.pop
+        @items << item
       end
 
       self
