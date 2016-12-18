@@ -1,15 +1,15 @@
 # Samao
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/Samao`. To experiment with that code, run `bin/console` for an interactive prompt.
+Samao is a simple and easy to use web-crawlar written in ruby.
 
-TODO: Delete this and the text above, and describe your gem
+[![Build Status](https://travis-ci.org/Lax/Samao.svg?branch=master)](https://travis-ci.org/Lax/Samao)
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'Samao'
+gem 'samao'
 ```
 
 And then execute:
@@ -18,11 +18,47 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install Samao
+    $ gem install samao
 
 ## Usage
 
-TODO: Write usage instructions here
+    #!/usr/bin/env ruby
+    require 'samao'
+
+    # create samao detector
+    samao = Samao::Detector.new
+
+    # set base url and start page
+    samao.base_url 'https://github.com'
+    samao.from '/Lax?tab=repositories'
+    # the following line have the same effect
+    #samao.from  'https://github.com/Lax?tab=repositories'
+
+    # tell samao how to find the next page
+    samao.match :next, 'div.pagination a.next_page'
+
+    # tell samao how to find items.
+    # further more, set the data from matched HTML node/element.
+    samao.add_item 'div#user-repositories-list li a[itemprop="name codeRepository"]' do |item|
+      item.set_url :url, item.raw(:item)['href']
+      item.set :title, item.raw(:item).text.strip
+    end
+
+    # if it need to open content page for more information
+    # default key is :url
+    samao.add_detail :url do |detail|
+    #samao.add_detail do |detail|
+      detail.match :author, 'h1.public .author a' do |item|
+        item.set :author, item.raw(:author).first.text.strip
+      end
+    end
+
+    # run the detector
+    samao.run
+
+    # read items
+    p samao.items
+    ## [{:url=>"https://github.com/Lax/awesome", :title=>"awesome", :author=>"Lax"}, {:url=>"https://github.com/Lax/lax.github.com", :title=>"lax.github.com", :author=>"Lax"}, ..]
 
 ## Development
 
@@ -32,10 +68,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/Samao. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/Lax/Samao. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
