@@ -11,6 +11,7 @@ module Samao
 
       @headers = {}
       @headers["Referer"] = params[:base_url].to_s if params[:base_url]
+      @headers["User-Agent"] = "Samao/%s; Ruby/%s" % [Samao::VERSION, RUBY_VERSION]
 
       self
     end
