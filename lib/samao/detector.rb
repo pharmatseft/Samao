@@ -5,7 +5,7 @@ module Samao
     def initialize(params={})
       matchable
 
-      @current_url = @base_url = @from = nil
+      @current_url = @base_url = @from = @max_page = nil
       @pages = []
       @items = []
 
@@ -56,7 +56,9 @@ module Samao
         end # end if found
 
         # find next page[s] in current page
-        if @selector[:next] and next_url = @current_doc.at_css(@selector[:next]) and next_url = URI.join(@current_url, next_url['href'])
+        if @max_page and @pages.size >= @max_page
+          stop
+        elsif @selector[:next] and next_url = @current_doc.at_css(@selector[:next]) and next_url = URI.join(@current_url, next_url['href'])
           @on[:next].call(next_url) if @on[:next]
           from next_url
         else
@@ -100,6 +102,13 @@ module Samao
     # set base url
     def base_url(url)
       @base_url = url
+
+      self
+    end
+
+    # set max page
+    def max_page(max)
+      @max_page = max
 
       self
     end
