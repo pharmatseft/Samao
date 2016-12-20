@@ -113,12 +113,13 @@ module Samao
       self
     end
 
-    # set max page
-    def max_page(max)
-      @max_page = max
+    # set max concurrent level
+    def max_concurrent(max)
+      @max_concurrent = max
 
       self
     end
+    alias :concurrent :max_concurrent
 
     # get pages
     def pages

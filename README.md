@@ -29,6 +29,9 @@ require 'samao'
 # create samao detector
 samao = Samao::Detector.new
 
+# set max concurrent level
+samao.concurrent 3
+
 # set base url and start page
 samao.baseurl 'https://github.com'
 samao.from '/Lax?tab=repositories'
