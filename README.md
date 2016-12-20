@@ -22,47 +22,49 @@ Or install it yourself as:
 
 ## Usage
 
-    #!/usr/bin/env ruby
-    require 'samao'
+```ruby
+#!/usr/bin/env ruby
+require 'samao'
 
-    # create samao detector
-    samao = Samao::Detector.new
+# create samao detector
+samao = Samao::Detector.new
 
-    # set base url and start page
-    samao.baseurl 'https://github.com'
-    samao.from '/Lax?tab=repositories'
-    # the following line have the same effect
-    #samao.from  'https://github.com/Lax?tab=repositories'
+# set base url and start page
+samao.baseurl 'https://github.com'
+samao.from '/Lax?tab=repositories'
+# the following line have the same effect
+#samao.from  'https://github.com/Lax?tab=repositories'
 
-    # tell samao how to find the next page
-    samao.find :next, 'div.pagination a.next_page'
-    samao.max_page 1
+# tell samao how to find the next page
+samao.find :next, 'div.pagination a.next_page'
+samao.max_page 1
 
-    # tell samao how to find items.
-    # further more, set the data from matched HTML node/element.
-    samao.find_item 'div#user-repositories-list li a[itemprop="name codeRepository"]' do |item|
-      item.set_url :url, item.raw(:item)['href']
-      item.set :title, item.raw(:item).text.strip
-    end
+# tell samao how to find items.
+# further more, set the data from matched HTML node/element.
+samao.find_item 'div#user-repositories-list li a[itemprop="name codeRepository"]' do |item|
+  item.set_url :url, item.raw(:item)['href']
+  item.set :title, item.raw(:item).text.strip
+end
 
-    samao.find_item 'div#user-repositories-list li' do |item|
-      item.find(:url, 'a[itemprop="name codeRepository"]') {|value| [:set_url, :url, value.first['href']] }
-      item.find(:title, 'a[itemprop="name codeRepository"]') {|value| [:set, value.first.text.strip] }
-    end
+samao.find_item 'div#user-repositories-list li' do |item|
+  item.find(:url, 'a[itemprop="name codeRepository"]') {|value| [:set_url, :url, value.first['href']] }
+  item.find(:title, 'a[itemprop="name codeRepository"]') {|value| [:set, value.first.text.strip] }
+end
 
-    # if it need to open content page for more information
-    # default key is :url
-    samao.add_detail :url do |detail|
-    #samao.add_detail do |detail|
-      detail.find(:author, 'h1.public .author a') {|value| value.first.text.strip }
-    end
+# if it need to open content page for more information
+# default key is :url
+samao.add_detail :url do |detail|
+#samao.add_detail do |detail|
+  detail.find(:author, 'h1.public .author a') {|value| value.first.text.strip }
+end
 
-    # run the detector
-    samao.run
+# run the detector
+samao.run
 
-    # read items
-    p samao.items
-    ## [{:url=>"https://github.com/Lax/awesome", :title=>"awesome", :author=>"Lax"}, {:url=>"https://github.com/Lax/lax.github.com", :title=>"lax.github.com", :author=>"Lax"}, ..]
+# read items
+p samao.items
+## [{:url=>"https://github.com/Lax/awesome", :title=>"awesome", :author=>"Lax"}, {:url=>"https://github.com/Lax/lax.github.com", :title=>"lax.github.com", :author=>"Lax"}, ..]
+```
 
 ## Development
 
