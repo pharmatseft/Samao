@@ -4,3 +4,5 @@ rvm:
   - 2.3.3
   - ruby-head
 before_install: gem install bundler -v 1.13.6
+script:
+  - bundle exec rake spec
