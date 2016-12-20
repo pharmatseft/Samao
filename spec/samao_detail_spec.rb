@@ -3,7 +3,7 @@ require "spec_helper"
 describe Samao::Detail do
   before(:all) do
     @detector = Samao::Detector.new do |detector|
-      detector.base_url 'https://github.com'
+      detector.baseurl 'https://github.com'
       detector.from '/Lax?tab=repositories'
 
       detector.find_item 'div#user-repositories-list li' do |item|

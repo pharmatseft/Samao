@@ -8,7 +8,8 @@ module Samao
       @prop = {}   # usefull properties
       @raw = {}    # nodes go here.
 
-      @base_url = params[:base_url]
+      @baseurl = params[:baseurl].to_s
+
       set_raw :item, params[:raw_item] if params[:raw_item]
 
       yield self if block_given?
@@ -30,8 +31,12 @@ module Samao
     end
 
     def set_url(name, value)
-      value = URI.join @base_url, value if @base_url
+      value = URI.join @baseurl, value if @baseurl
       set(name, value.to_s)
+    end
+
+    def set_baseurl(baseurl=nil)
+      @prop[:baseurl] = baseurl || @baseurl
     end
 
     def prop(name=nil)

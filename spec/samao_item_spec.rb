@@ -3,10 +3,12 @@ require "spec_helper"
 describe Samao::Item do
   before(:all) do
     @detector = Samao::Detector.new do |detector|
-      detector.base_url 'https://github.com'
+      detector.baseurl 'https://github.com'
       detector.from '/Lax?tab=repositories'
 
       detector.find_item 'div#user-repositories-list li' do |item|
+        item.set_baseurl
+
         item.find :url, 'a[itemprop="name codeRepository"]' do |value|
           [:set_url, :url, value.first['href']]
         end
@@ -21,6 +23,10 @@ describe Samao::Item do
 
   it 'can find items' do
     expect(@detector.items.size).to be > 0
+  end
+
+  it 'can set item baseurl' do
+    expect(@detector.items.first).to have_key(:baseurl)
   end
 
   it 'can find item title' do

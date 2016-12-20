@@ -7,8 +7,8 @@ module Samao
 
       @item = params[:item]
       @url = params[:url]
-      @base_url = params[:base_url]
-      @catcher = Catcher.new(url:@url, base_url: @base_url)
+      @baseurl = params[:baseurl]
+      @catcher = Catcher.new(url:@url, baseurl: @baseurl)
 
       yield self if block_given?
 
