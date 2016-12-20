@@ -3,21 +3,21 @@ require "spec_helper"
 describe Samao::Detail do
   before(:all) do
     @detector = Samao::Detector.new do |detector|
-      detector.base_url 'https://github.com'
+      detector.baseurl 'https://github.com'
       detector.from '/Lax?tab=repositories'
 
-      detector.add_item 'div#user-repositories-list li' do |item|
-        item.match :url, 'a[itemprop="name codeRepository"]' do |item|
-          item.set_url :url, item.raw(:url).first['href']
+      detector.find_item 'div#user-repositories-list li' do |item|
+        item.find :url, 'a[itemprop="name codeRepository"]' do |value|
+          [:set_url, value.first['href']]
         end
       end
 
       detector.add_detail :url do |detail|
-        detail.match :name, 'h1.public strong[itemprop="name"] a' do |item|
-          item.set :name, item.raw(:name).first.text.strip
+        detail.find :name, 'h1.public strong[itemprop="name"] a' do |value|
+          value.first.text.strip
         end
-        detail.match :author, 'h1.public .author a' do |item|
-          item.set :author, item.raw(:author).first.text.strip
+        detail.find :author, 'h1.public .author a' do |value|
+          value.first.text.strip
         end
       end
     end.run

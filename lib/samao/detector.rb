@@ -5,7 +5,7 @@ module Samao
     def initialize(params={})
       matchable
 
-      @current_url = @base_url = @from = @max_page = nil
+      @current_url = @baseurl = @from = @max_page = nil
       @pages = []
       @items = []
 
@@ -35,7 +35,7 @@ module Samao
               # puts "#{Time.now} #{@semaphore.size} available tokens. #{@semaphore.num_waiting} threads waiting."
 
               begin
-                item = Item.new(base_url: @current_url, raw_item:raw_item) do |item|
+                item = Item.new(baseurl: @current_url, raw_item:raw_item) do |item|
                   @on[:item].call(item) if @on[:item]
                 end.run
 
@@ -81,18 +81,18 @@ module Samao
       @on[:detail] = block if block
     end
 
-    def add_item(selector, &block)
-      match(:item, selector, &block)
+    def find_item(selector, &block)
+      find(:item, selector, &block)
     end
 
     # set front page
     def from(url)
-      if prev_url = @current_url || @base_url
+      if prev_url = @current_url || @baseurl
         url = URI.join(prev_url, url)
       end
       url = URI(url) if ! url.is_a? URI
 
-      @from = Catcher.new(url:url, base_url:@current_url)
+      @from = Catcher.new(url:url, baseurl:@current_url)
       @pages << url
       @current_url = url
 
@@ -100,8 +100,15 @@ module Samao
     end
 
     # set base url
-    def base_url(url)
-      @base_url = url
+    def baseurl(url)
+      @baseurl = url
+
+      self
+    end
+
+    # set max page
+    def max_page(max)
+      @max_page = max
 
       self
     end

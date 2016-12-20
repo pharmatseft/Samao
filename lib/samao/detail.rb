@@ -7,8 +7,8 @@ module Samao
 
       @item = params[:item]
       @url = params[:url]
-      @base_url = params[:base_url]
-      @catcher = Catcher.new(url:@url, base_url: @base_url)
+      @baseurl = params[:baseurl]
+      @catcher = Catcher.new(url:@url, baseurl: @baseurl)
 
       yield self if block_given?
 
@@ -18,8 +18,7 @@ module Samao
     def run
       if @catcher and @catcher.run.success? and doc = @catcher.doc
         @selector.each do |name, sel|
-          @item.set_raw name, doc.css(sel)
-          @on[name].call @item if @on[name]
+          found(name, doc.css(sel), @item)
         end
       end
 
