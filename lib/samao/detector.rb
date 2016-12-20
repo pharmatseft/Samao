@@ -81,8 +81,8 @@ module Samao
       @on[:detail] = block if block
     end
 
-    def add_item(selector, &block)
-      match(:item, selector, &block)
+    def find_item(selector, &block)
+      find(:item, selector, &block)
     end
 
     # set front page

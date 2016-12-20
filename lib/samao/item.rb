@@ -18,8 +18,7 @@ module Samao
 
     def extract
       @selector.each do |name, sel|
-        set_raw name, @raw[:item].css(sel)
-        @on[name].call self if @on[name]
+        found(name, @raw[:item].css(sel))
       end
 
       self

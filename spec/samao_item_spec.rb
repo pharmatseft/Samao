@@ -6,13 +6,13 @@ describe Samao::Item do
       detector.base_url 'https://github.com'
       detector.from '/Lax?tab=repositories'
 
-      detector.add_item 'div#user-repositories-list li' do |item|
-        item.match :url, 'a[itemprop="name codeRepository"]' do |item|
-          item.set_url :url, item.raw(:url).first['href']
+      detector.find_item 'div#user-repositories-list li' do |item|
+        item.find :url, 'a[itemprop="name codeRepository"]' do |value|
+          [:set_url, :url, value.first['href']]
         end
 
-        item.match :title, 'a[itemprop="name codeRepository"]' do |item|
-          item.set :title, item.raw(:title).first.text.strip
+        item.find :title, 'a[itemprop="name codeRepository"]' do |value|
+          value.first.text.strip
         end
       end
 

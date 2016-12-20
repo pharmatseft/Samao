@@ -18,8 +18,7 @@ module Samao
     def run
       if @catcher and @catcher.run.success? and doc = @catcher.doc
         @selector.each do |name, sel|
-          @item.set_raw name, doc.css(sel)
-          @on[name].call @item if @on[name]
+          found(name, doc.css(sel), @item)
         end
       end
 

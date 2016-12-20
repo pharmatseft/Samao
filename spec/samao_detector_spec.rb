@@ -7,10 +7,10 @@ describe Samao::Detector do
       detector.base_url 'https://github.com'
       detector.from '/Lax?tab=repositories'
 
-      detector.match :next, 'div.pagination a.next_page'
+      detector.find :next, 'div.pagination a.next_page'
       detector.max_page @max_page
 
-      detector.add_item 'div#user-repositories-list li a[itemprop="name codeRepository"]' do |item|
+      detector.find_item 'div#user-repositories-list li a[itemprop="name codeRepository"]' do |item|
         item.set_url :url, item.raw[:item]['href']
         item.set :success, true
       end
