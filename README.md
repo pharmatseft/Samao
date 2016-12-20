@@ -29,28 +29,32 @@ Or install it yourself as:
     samao = Samao::Detector.new
 
     # set base url and start page
-    samao.base_url 'https://github.com'
+    samao.baseurl 'https://github.com'
     samao.from '/Lax?tab=repositories'
     # the following line have the same effect
     #samao.from  'https://github.com/Lax?tab=repositories'
 
     # tell samao how to find the next page
-    samao.match :next, 'div.pagination a.next_page'
+    samao.find :next, 'div.pagination a.next_page'
+    samao.max_page 1
 
     # tell samao how to find items.
     # further more, set the data from matched HTML node/element.
-    samao.add_item 'div#user-repositories-list li a[itemprop="name codeRepository"]' do |item|
+    samao.find_item 'div#user-repositories-list li a[itemprop="name codeRepository"]' do |item|
       item.set_url :url, item.raw(:item)['href']
       item.set :title, item.raw(:item).text.strip
+    end
+
+    samao.find_item 'div#user-repositories-list li' do |item|
+      item.find(:url, 'a[itemprop="name codeRepository"]') {|value| [:set_url, :url, value.first['href']] }
+      item.find(:title, 'a[itemprop="name codeRepository"]') {|value| [:set, value.first.text.strip] }
     end
 
     # if it need to open content page for more information
     # default key is :url
     samao.add_detail :url do |detail|
     #samao.add_detail do |detail|
-      detail.match :author, 'h1.public .author a' do |item|
-        item.set :author, item.raw(:author).first.text.strip
-      end
+      detail.find(:author, 'h1.public .author a') {|value| value.first.text.strip }
     end
 
     # run the detector
