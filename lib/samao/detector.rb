@@ -113,6 +113,13 @@ module Samao
       self
     end
 
+    # set max page
+    def max_page(max)
+      @max_page = max
+
+      self
+    end
+
     # get pages
     def pages
       @pages
