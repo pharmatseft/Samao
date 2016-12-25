@@ -4,7 +4,9 @@ Samao is a simple and easy to use web-crawlar written in ruby.
 
 [![Build Status](https://travis-ci.org/Lax/Samao.svg?branch=master)](https://travis-ci.org/Lax/Samao)
 
-## Installation
+## Usage
+
+### Installation
 
 Add this line to your application's Gemfile:
 
@@ -20,7 +22,7 @@ Or install it yourself as:
 
     $ gem install samao
 
-## Usage
+### Code Example
 
 ```ruby
 #!/usr/bin/env ruby
@@ -59,6 +61,18 @@ end
 samao.add_detail :url do |detail|
 #samao.add_detail do |detail|
   detail.find(:author, 'h1.public .author a') {|value| value.first.text.strip }
+
+  detail.find(:watch, 'ul.pagehead-actions li:nth-child(1) a[aria-label~="watching this repository"]') {|value| value.first['aria-label'].split[0].to_i }
+  detail.find(:star, 'ul.pagehead-actions li:nth-child(2) a[aria-label~="starred this repository"]') {|value| value.first['aria-label'].split[0].to_i }
+  detail.find(:fork, 'ul.pagehead-actions li:nth-child(3) a[aria-label~="forked this repository"]') {|value| value.first['aria-label'].split[0].to_i }
+
+  detail.find(:'lang-stats', 'div.repository-lang-stats ol.repository-lang-stats-numbers li') {|value|
+    value.map {|li|
+      lang = li.at_css('span.lang').text.strip
+      percent = li.at_css('span.percent').text.strip
+      [lang, percent]
+    }.to_h
+  }
 end
 
 # run the detector
@@ -68,6 +82,19 @@ samao.run
 p samao.items
 ## [{:url=>"https://github.com/Lax/awesome", :title=>"awesome", :author=>"Lax"}, {:url=>"https://github.com/Lax/lax.github.com", :title=>"lax.github.com", :author=>"Lax"}, ..]
 ```
+
+## Concept
+
+### Selectors
+
+> A Selector represents a structure. This structure can be used as a condition (e.g. in a CSS rule) that determines which elements a selector matches in the document tree, or as a flat description of the HTML or XML fragment corresponding to that structure.
+
+> Selectors may range from simple element names to rich contextual representations.
+
+> A __selector__ is a chain of one or more sequences of simple selectors separated by combinators.
+
+- [W3C Selectors](https://www.w3.org/TR/selectors/)
+- [MSDN Selectors](https://msdn.microsoft.com/library/hh772056(v=vs.85).aspx)
 
 ## Development
 
