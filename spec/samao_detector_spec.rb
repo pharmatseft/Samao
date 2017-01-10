@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Samao::Detector do
   before(:all) do
-    @max_page = 3
+    @max_page = 2
     @detector = Samao::Detector.new do |detector|
       detector.baseurl 'https://github.com'
       detector.from '/Lax?tab=repositories'
